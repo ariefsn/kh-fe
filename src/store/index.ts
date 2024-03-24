@@ -5,8 +5,8 @@ import { todoApi, todoSlice } from "./todo"
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      [todoApi.reducerPath]: todoApi.reducer,
       [authSlice.name]: authSlice.reducer,
+      [todoApi.reducerPath]: todoApi.reducer,
       [todoSlice.name]: todoSlice.reducer
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(todoApi.middleware)

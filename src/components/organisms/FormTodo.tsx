@@ -2,7 +2,7 @@
 
 import { Button, ErrorMessage } from "@/components/atoms"
 import { TextLabel } from "@/components/molecules"
-import { ITodoDto } from "@/entities"
+import { ITodoDto, SchemaTodoDto } from "@/entities"
 import { AppState } from "@/store"
 import { useAddTodoMutation, useUpdateTodoMutation } from "@/store/todo"
 import { useEffect, useState } from "react"
@@ -23,6 +23,11 @@ export const FormTodo = ({ todo, onChange, onClear }: ITodoFormProps) => {
     done: false
   })
 
+  const [errors, setErrors] = useState({
+    name: '',
+    details: '',
+  })
+
   const onReset = () => {
     setPayload({
       name: '',
@@ -38,12 +43,22 @@ export const FormTodo = ({ todo, onChange, onClear }: ITodoFormProps) => {
   const [updateTodo] = useUpdateTodoMutation()
 
   const onSubmit = async () => {
-    if (payload.id) {
-      await updateTodo({ id: payload.id, body: payload })
+    setErrors({ name: '', details: '' })
+    const valid = SchemaTodoDto.safeParse(payload)
+    if (valid.success) {
+      if (valid.data.id) {
+        await updateTodo({ id: valid.data.id, body: valid.data })
+      } else {
+        await addTodo(valid.data)
+      }
+      onReset()
     } else {
-      await addTodo(payload)
+      const errs = valid.error.flatten().fieldErrors
+      setErrors({
+        name: errs.name ? errs.name[0] : '',
+        details: errs.details ? errs.details[0] : ''
+      })
     }
-    onReset()
   }
 
   useEffect(() => {
@@ -56,8 +71,8 @@ export const FormTodo = ({ todo, onChange, onClear }: ITodoFormProps) => {
     <>
       <h3>{payload?.id ? 'Update' : 'Add'} Todo</h3>
       <div>
-        <TextLabel title="Name" id="name" type="text" value={payload.name} onChange={(value) => setPayload({ ...payload, name: value })} />
-        <TextLabel title="Details" id="details" type="text" textarea value={payload.details} onChange={(value) => setPayload({ ...payload, details: value })} />
+        <TextLabel title="Name" testId="inputName" id="name" type="text" value={payload.name} message={errors.name} onChange={(value) => setPayload({ ...payload, name: value })} />
+        <TextLabel title="Details" testId="inputDetails" id="details" type="text" textarea value={payload.details} message={errors.details} onChange={(value) => setPayload({ ...payload, details: value })} />
 
         {authState.message && <ErrorMessage message={authState.message} />}
 

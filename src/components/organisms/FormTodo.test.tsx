@@ -1,66 +1,7 @@
-import { IResponse, ITodo } from '@/entities'
 import { renderWithProviders } from '@/store/StoreProviderTest'
 import '@testing-library/jest-dom'
 import { act, fireEvent, screen } from '@testing-library/react'
-import { delay, http, HttpResponse } from 'msw'
-import { setupServer } from 'msw/node'
 import { FormTodo } from '.'
-
-const appAddress = process.env.NEXT_PUBLIC_APP_ADDRESS
-
-const mockData: ITodo[] = [{
-  id: '1',
-  name: 'name 1',
-  details: 'details 1',
-  done: false,
-  created_at: new Date().toISOString()
-}, {
-  id: '2',
-  name: 'name 2',
-  details: 'details 2',
-  done: false,
-  created_at: new Date().toISOString()
-}]
-
-const handlers = [
-  http.get(appAddress + '/api/todox', async () => {
-    delay(250)
-    return HttpResponse.json<IResponse<ITodo[]>>({
-      string: 'ok', data: mockData
-    })
-  }),
-  http.post(appAddress + '/api/todo', async () => {
-    delay(250)
-    return HttpResponse.json<IResponse<ITodo[]>>({
-      string: 'ok', data: mockData
-    })
-  }),
-  http.delete(appAddress + '/api/todo/1', async () => {
-    delay(250)
-    return HttpResponse.json<IResponse<ITodo[]>>({
-      string: 'ok', data: mockData
-    })
-  }),
-  http.put(appAddress + '/api/todo/1', async () => {
-    delay(250)
-    return HttpResponse.json<IResponse<ITodo[]>>({
-      string: 'ok', data: mockData
-    })
-  }),
-]
-
-const server = setupServer(...handlers)
-
-beforeAll(() => {
-  server.listen({
-    onUnhandledRequest: 'warn',
-  })
-  server.events.on('request:match', (req) => {
-    console.log(`[${req.request.method}] ${req.request.url}`)
-  })
-})
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
 
 describe('Organisms > FormTodo', () => {
   it('should render correctly', async () => {
@@ -75,5 +16,35 @@ describe('Organisms > FormTodo', () => {
 
     const elBtn = screen.getByRole('button')
     act(() => fireEvent.click(elBtn))
+  })
+
+  it('should render the error message', async () => {
+    await act(async () => renderWithProviders(<FormTodo />))
+
+    const el = screen.getByTestId('inputName')
+    expect(el).toBeInTheDocument()
+    fireEvent.change(el, { target: { value: 'test' } })
+
+    const elBtn = screen.getByRole('button')
+    expect(elBtn).toBeInTheDocument()
+
+    elBtn.click()
+  })
+
+  it('should render valid form when submit', async () => {
+    await act(async () => renderWithProviders(<FormTodo onClear={() => { }} />))
+
+    const elInputName = screen.getByTestId('inputName')
+    expect(elInputName).toBeInTheDocument()
+    act(() => fireEvent.change(elInputName, { target: { value: 'this is valid name' } }))
+
+    const elInputDetails = screen.getByTestId('inputDetails')
+    expect(elInputDetails).toBeInTheDocument()
+    act(() => fireEvent.change(elInputDetails, { target: { value: 'this is valid details' } }))
+
+    const elBtn = screen.getByRole('button')
+    expect(elBtn).toBeInTheDocument()
+
+    elBtn.click()
   })
 })
