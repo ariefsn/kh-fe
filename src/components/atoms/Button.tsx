@@ -6,7 +6,7 @@ export interface IButtonProps {
 
 export const Button = ({ id, title, onClick }: IButtonProps) => {
   return (
-    <button id={id} className="py-1 px-3 border rounded-md" onClick={onClick}>
+    <button id={id} className="py-1 px-3 border rounded-md mb-1" onClick={onClick}>
       {title}
     </button>
   )

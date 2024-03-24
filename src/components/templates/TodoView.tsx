@@ -30,10 +30,10 @@ export const TodosView = () => {
   if (isError) return <div>Error</div>
   if (isSuccess) {
     return <div className="grid grid-cols-12 grid-flow-row gap-12 p-8">
-      <div className="col-span-3">
+      <div className="col-span-4 md:col-span-4 lg:col-span-3">
         <FormTodo todo={todo} onClear={() => setTodo(undefined)} />
       </div>
-      <div className="col-span-9">
+      <div className="col-span-8 md:col-span-8 lg:col-span-9">
         {
           !filtered?.length && !search ? <SubTitle text="No data, create one!" /> : <>
             <Title text="Todos" />

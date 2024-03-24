@@ -9,7 +9,7 @@ export interface ICardTodoProps {
 }
 
 export const CardTodo = ({ todo, onDelete, onEdit, onUpdate }: ICardTodoProps) => {
-  return <div key={todo.name} className="col-span-3 border border-white p-2 rounded-md cursor-pointer">
+  return <div key={todo.name} className="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 border border-white p-2 rounded-md cursor-pointer">
     <Title text={todo.name} />
     <SubTitle text={todo.details} />
     <div className="mt-2">
