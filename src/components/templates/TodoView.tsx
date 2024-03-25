@@ -1,15 +1,17 @@
 'use client'
 
-import { SubTitle, TextField, Title } from "@/components/atoms"
+import { Button, SubTitle, TextField, Title } from "@/components/atoms"
 import { CardTodo } from "@/components/molecules"
 import { FormTodo } from "@/components/organisms"
 import { ITodo } from "@/entities"
-import { AppState } from "@/store"
+import { AppDispatch, AppState } from "@/store"
+import { authLogout } from "@/store/auth"
 import { useDeleteTodoMutation, useGetTodosQuery, useUpdateTodoMutation } from "@/store/todo"
 import { useMemo, useState } from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 export const TodosView = () => {
+  const dispatch = useDispatch<AppDispatch>()
   const [search, setSearch] = useState('')
   const [todo, setTodo] = useState<ITodo | undefined>()
   const { isError, isLoading, isSuccess } = useGetTodosQuery({ skip: 0, limit: 10 })
@@ -21,17 +23,29 @@ export const TodosView = () => {
     await updateTodo({ id: payload.id, body: { ...payload, done: !payload.done } })
   }
 
+  const onLogout = async () => {
+    dispatch(authLogout())
+  }
+
   const filtered = useMemo(() => {
     if (!search) return todos
     return todos.filter((e) => e.name.toLowerCase().includes(search.toLowerCase()))
   }, [todos, search])
 
   if (isLoading) return <div>Loading...</div>
-  if (isError) return <div>Error</div>
+  if (isError) return (<>
+    <div>Error</div>
+    <div className="absolute top-4 right-4">
+      <Button title="Logout" testId="btnLogout" onClick={onLogout} />
+    </div>
+  </>)
   if (isSuccess) {
     return <div className="grid grid-cols-12 grid-flow-row gap-12 p-8">
       <div className="col-span-4 md:col-span-4 lg:col-span-3">
         <FormTodo todo={todo} onClear={() => setTodo(undefined)} />
+        <div className="absolute top-4 right-4">
+          <Button title="Logout" testId="btnLogout" onClick={onLogout} />
+        </div>
       </div>
       <div className="col-span-8 md:col-span-8 lg:col-span-9">
         {

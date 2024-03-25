@@ -20,4 +20,13 @@ describe('Templates > TodoView', () => {
     const el = await screen.findByText('Error')
     expect(el).toBeInTheDocument()
   })
+
+  it('should have the button logout', async () => {
+    const instance = renderWithProviders(<TodosView />)
+    waitFor(() => expect(instance).toBeTruthy())
+
+    const el = await screen.findByTestId('btnLogout')
+    expect(el).toBeInTheDocument()
+  })
+
 })

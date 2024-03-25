@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, ErrorMessage } from "@/components/atoms"
+import { Button } from "@/components/atoms"
 import { TextLabel } from "@/components/molecules"
 import { ITodoDto, SchemaTodoDto } from "@/entities"
 import { AppState } from "@/store"
@@ -73,8 +73,6 @@ export const FormTodo = ({ todo, onChange, onClear }: ITodoFormProps) => {
       <div>
         <TextLabel title="Name" testId="inputName" id="name" type="text" value={payload.name} message={errors.name} onChange={(value) => setPayload({ ...payload, name: value })} />
         <TextLabel title="Details" testId="inputDetails" id="details" type="text" textarea value={payload.details} message={errors.details} onChange={(value) => setPayload({ ...payload, details: value })} />
-
-        {authState.message && <ErrorMessage message={authState.message} />}
 
         <div className="my-3">
           <Button title={payload?.id ? 'Update' : 'Save'} onClick={onSubmit} />

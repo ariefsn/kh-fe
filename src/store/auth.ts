@@ -10,6 +10,14 @@ export const authLogin = createAsyncThunk<IResponse<string>, ILoginDto>('auth/lo
   return json
 })
 
+export const authLogout = createAsyncThunk<IResponse<string>, void>('auth/logout', async () => {
+  const response = await fetch('/api/auth/logout', {
+    method: 'GET',
+  })
+  const json = await response.json() as IResponse<string>
+  return json
+})
+
 const initialState = {
   token: '',
   message: ''
@@ -34,6 +42,14 @@ export const authSlice = createSlice({
       if (action.payload.data) {
         state.token = action.payload.data
       }
-    })
+    }),
+      builder.addCase(authLogout.fulfilled, (state, action) => {
+        state.message = action.payload.error_message ?? ''
+
+        if (action.payload.data) {
+          state.token = ''
+          window.location.reload()
+        }
+      })
   }
 });

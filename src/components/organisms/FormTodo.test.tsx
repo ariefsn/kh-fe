@@ -28,7 +28,7 @@ describe('Organisms > FormTodo', () => {
     const elBtn = screen.getByRole('button')
     expect(elBtn).toBeInTheDocument()
 
-    elBtn.click()
+    act(() => fireEvent.click(elBtn))
   })
 
   it('should render valid form when submit', async () => {
@@ -45,6 +45,6 @@ describe('Organisms > FormTodo', () => {
     const elBtn = screen.getByRole('button')
     expect(elBtn).toBeInTheDocument()
 
-    elBtn.click()
+    act(() => fireEvent.click(elBtn))
   })
 })

@@ -40,7 +40,7 @@ export const FormLogin = () => {
 
   useEffect(() => {
     if (authState.token) {
-      location.reload()
+      window.location.reload()
     }
   }, [authState.token])
 
